@@ -1,0 +1,9 @@
+dependencies {
+    compile project(":spring")
+}
+
+mainClassName="com.replash.examples.spring.SpringMain"
+
+jar {
+    baseName = "replash-example-spring"
+}

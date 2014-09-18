@@ -1,0 +1,5 @@
+mainClassName="com.replash.examples.customprompt.CustomPromptMain"
+
+jar {
+    baseName = "replash-example-customprompt"
+}

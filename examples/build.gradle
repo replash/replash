@@ -1,0 +1,7 @@
+subprojects {
+    apply plugin: 'application'
+
+    dependencies {
+        compile project(":core")
+    }
+}

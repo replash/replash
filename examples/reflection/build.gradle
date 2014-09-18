@@ -1,0 +1,5 @@
+mainClassName="com.replash.examples.reflection.ReflectionMain"
+
+jar {
+    baseName = "jonsole-example-reflection"
+}

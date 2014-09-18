@@ -1,0 +1,5 @@
+mainClassName="com.replash.examples.simple.SimpleMain"
+
+jar {
+    baseName = "replash-example-simple"
+}

@@ -1,0 +1,9 @@
+mainClassName="com.replash.examples.options.OptionsMain"
+
+dependencies {
+    compile project(":options")
+}
+
+jar {
+    baseName = "replash-example-options"
+}
