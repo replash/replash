@@ -1,12 +1,9 @@
 package com.replash;
 
-import java.io.IOException;
-
 import jline.console.completer.Completer;
 
-/**
- * Created by cbeattie on 15/08/14.
- */
+import java.io.IOException;
+
 public interface ConsoleAdapter {
     void shutdown();
 

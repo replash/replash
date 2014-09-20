@@ -5,9 +5,6 @@ import org.junit.Before;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * Created by cbeattie on 12/09/14.
- */
 public class ReplashRuntimeBasedTest {
     protected ConsoleAdapter consoleAdapter;
     protected CommandTree commandTree;

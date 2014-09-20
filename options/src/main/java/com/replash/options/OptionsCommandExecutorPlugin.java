@@ -5,9 +5,6 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.ParseException;
 
-/**
- * Created by cbeattie on 24/08/14.
- */
 public class OptionsCommandExecutorPlugin implements CommandExecutorPlugin {
     private final CommandLineParser defaultParser = new BasicParser();
 

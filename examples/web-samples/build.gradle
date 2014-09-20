@@ -1,0 +1,6 @@
+mainClassName = "com.replash.examples.websamples.WebSamplesMain"
+
+
+jar {
+    baseName = "replash-example-web-samples"
+}

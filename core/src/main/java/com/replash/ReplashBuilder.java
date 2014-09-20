@@ -89,7 +89,7 @@ public class ReplashBuilder {
         return this;
     }
 
-    public ReplashBuilder withCommand(Object commandsObject) {
+    public ReplashBuilder withCommands(Object commandsObject) {
         List<ReflectionCommandResult> reflectionCommandResults = reflectionCommandFactory.create(commandsObject);
         for(ReflectionCommandResult result : reflectionCommandResults) {
             withCommand(result.getCommandName(), result.getBasicCommand());

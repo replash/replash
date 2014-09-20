@@ -12,9 +12,6 @@ import org.springframework.context.SmartLifecycle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Created by cbeattie on 07/09/14.
- */
 public class SpringReplashRunnerBean implements SmartLifecycle, ApplicationContextAware {
     @Autowired(required = false)
     private ExecutorService executorService;

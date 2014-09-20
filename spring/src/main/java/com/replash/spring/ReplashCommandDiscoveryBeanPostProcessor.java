@@ -7,9 +7,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.lang.reflect.Method;
 
-/**
-* Created by cbeattie on 11/09/14.
-*/
 public class ReplashCommandDiscoveryBeanPostProcessor implements BeanPostProcessor {
     private final ReplashBuilder replashBuilder;
 
@@ -28,7 +25,7 @@ public class ReplashCommandDiscoveryBeanPostProcessor implements BeanPostProcess
         for(Method method : beanClass.getMethods()) {
             Command commandAnnotation = method.getAnnotation(Command.class);
             if(commandAnnotation != null) {
-                replashBuilder.withCommand(bean);
+                replashBuilder.withCommands(bean);
                 break;
             }
         }

@@ -5,9 +5,6 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-/**
-* Created by cbeattie on 24/08/14.
-*/
 public class ServiceLoaderUtils {
     private ServiceLoaderUtils() {}
 

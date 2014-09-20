@@ -156,6 +156,32 @@ public class DefaultReflectionCommandFactoryTest {
         assertTrue(ClassWithCommandContextArgument.command1Executed);
     }
 
+    @Test
+    public void testCreateWithCommandWithCustomName() throws Exception {
+        // Execute
+        List<ReflectionCommandResult> results = commandFactory.create(ClassWithCustomName.class);
+
+        // Verify
+        assertEquals(1, results.size());
+        ReflectionCommandResult result = results.get(0);
+        assertEquals("customName", result.getCommandName());
+        executeCommand(result.getBasicCommand());
+        assertTrue(ClassWithCustomName.command1Executed);
+    }
+
+    @Test
+    public void testCreateWithCommandWithStaticMethod() throws Exception {
+        // Execute
+        List<ReflectionCommandResult> results = commandFactory.create(ClassWithStaticCommandMethod.class);
+
+        // Verify
+        assertEquals(1, results.size());
+        ReflectionCommandResult result = results.get(0);
+        assertEquals("command1", result.getCommandName());
+        executeCommand(result.getBasicCommand());
+        assertTrue(ClassWithStaticCommandMethod.command1Executed);
+    }
+
     private void executeCommand(BasicCommand basicCommand, String... args) throws Exception {
         executeCommand(basicCommand, new CommandParameters("commandName", args));
     }
@@ -258,6 +284,24 @@ public class DefaultReflectionCommandFactoryTest {
         @Command
         public void command1(@Argument(required = false)String arg1) {
             assertEquals("value", arg1);
+            command1Executed = true;
+        }
+    }
+
+    public static class ClassWithCustomName {
+        public static boolean command1Executed;
+
+        @Command(name = "customName")
+        public void command1() {
+            command1Executed = true;
+        }
+    }
+
+    public static class ClassWithStaticCommandMethod {
+        public static boolean command1Executed;
+
+        @Command
+        public static void command1() {
             command1Executed = true;
         }
     }

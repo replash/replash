@@ -1,13 +1,10 @@
 package com.replash;
 
-import java.io.IOException;
-
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 
-/**
- * Created by cbeattie on 15/08/14.
- */
+import java.io.IOException;
+
 public class ConsoleAdapterImpl implements ConsoleAdapter {
     private final ConsoleReader consoleReader;
 

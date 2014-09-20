@@ -46,6 +46,9 @@ public class DefaultReflectionCommandFactory implements ReflectionCommandFactory
         ReflectionInvocationHandler invocationHandler = new ReflectionInvocationHandler(commandsClass, method, instance);
         BasicCommand basicCommand = (BasicCommand)Proxy.newProxyInstance(classLoader, interfaces, invocationHandler);
         String commandName = method.getName();
+        if(!StringUtils.isEmpty(commandAnnotation.name())) {
+            commandName = commandAnnotation.name();
+        }
         return new ReflectionCommandResult(commandName, basicCommand);
     }
 
