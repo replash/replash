@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":boot")
+    compile project(":spring-boot")
 }
 
 mainClassName="com.replash.examples.spring.boot.SpringBootMain"

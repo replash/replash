@@ -1,7 +1,5 @@
 package com.replash;
 
-import com.replash.BasicCommand;
-import com.replash.DefaultTabCompletionHandler;
 import com.replash.commands.CommandTree;
 import com.replash.commands.CommandTreeNode;
 import org.junit.Before;
@@ -10,7 +8,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class DefaultTabCompletionHandlerTest {
@@ -80,7 +80,7 @@ public class DefaultTabCompletionHandlerTest {
         // Verify
         assertEquals(0, result);
         assertEquals(2, candidates.size());
-        assertEquals("abcdef", candidates.get(0));
-        assertEquals("abcdefghijk", candidates.get(1));
+        assertThat(candidates, hasItem("abcdef"));
+        assertThat(candidates, hasItem("abcdefghijk"));
     }
 }

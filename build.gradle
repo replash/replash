@@ -7,7 +7,10 @@ subprojects {
         mavenCentral()
     }
 
-    jar {
-        version = "${replashVersion}"
-    }
+    group = "com.replash"
+    version = "${replashVersion}"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
 }
