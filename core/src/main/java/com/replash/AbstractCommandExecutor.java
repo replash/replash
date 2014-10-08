@@ -18,8 +18,8 @@ public abstract class AbstractCommandExecutor implements CommandExecutor {
         }
         else {
             CommandParameters commandParameters = parseCommandText(runtime, commandText);
-            BasicCommand resolvedBasicCommand = resolveCommand(runtime, commandParameters);
-            CommandContext executionContext = createExecutionContext(runtime, commandText, commandParameters, resolvedBasicCommand);
+            CommandResolutionContext resolutionContext = resolveCommand(runtime, commandParameters);
+            CommandContext executionContext = createExecutionContext(runtime, commandText, resolutionContext);
             executeCommand(executionContext);
         }
     }
@@ -36,17 +36,17 @@ public abstract class AbstractCommandExecutor implements CommandExecutor {
         return commandTextParser.parse(runtime, commandText);
     }
 
-    protected BasicCommand resolveCommand(ReplashRuntime runtime, CommandParameters commandParameters) throws UnknownCommandException {
-        BasicCommand resolvedBasicCommand = commandResolver.resolve(runtime, commandParameters);
-        if(resolvedBasicCommand == null) {
+    protected CommandResolutionContext resolveCommand(ReplashRuntime runtime, CommandParameters commandParameters) throws UnknownCommandException {
+        CommandResolutionContext resolutionContext = commandResolver.resolve(runtime, commandParameters);
+        if(resolutionContext == null) {
             throw new UnknownCommandException(commandParameters);
         }
 
-        return resolvedBasicCommand;
+        return resolutionContext;
     }
 
-    protected CommandContext createExecutionContext(ReplashRuntime runtime, String commandText, CommandParameters commandParameters, BasicCommand basicCommand) throws ReplashException {
-        return new CommandContext(runtime, commandText, commandParameters, basicCommand);
+    protected CommandContext createExecutionContext(ReplashRuntime runtime, String commandText, CommandResolutionContext resolutionContext) throws ReplashException {
+        return new CommandContext(runtime, commandText, resolutionContext);
     }
 
     protected abstract void executeCommand(CommandContext executionContext) throws ReplashCommandExecutionException;

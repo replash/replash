@@ -1,27 +1,23 @@
 package com.replash.commands.builtin;
 
 import com.replash.*;
-import com.replash.help.DetailedHelpHandler;
-import com.replash.help.SimpleHelpHandler;
 
 import java.io.IOException;
 
 public class HelpCommand implements CommandWithHelp {
-    private final SimpleHelpHandler simpleHelpHandler;
-    private final DetailedHelpHandler detailedHelpHandler;
+    private final HelpCommandHandler commandHandler;
 
-    public HelpCommand(SimpleHelpHandler simpleHelpHandler, DetailedHelpHandler detailedHelpHandler) {
-        this.simpleHelpHandler = simpleHelpHandler;
-        this.detailedHelpHandler = detailedHelpHandler;
+    public HelpCommand(HelpCommandHandler commandHandler) {
+        this.commandHandler = commandHandler;
     }
 
     @Override
     public void execute(CommandContext commandContext) throws Exception {
         if(commandContext.getCommandParameters().getArguments().length == 0) {
-            simpleHelpHandler.execute(commandContext);
+            commandHandler.printHelp(commandContext);
         }
         else {
-            detailedHelpHandler.execute(commandContext);
+            commandHandler.printHelpWithContext(commandContext);
         }
     }
 

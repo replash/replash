@@ -36,7 +36,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithOneCommandMethodWithZeroArguments.command1Executed);
     }
 
@@ -49,7 +49,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand(), "arg1Value", "true");
+        executeCommand(result.getNode(), "arg1Value", "true");
         assertTrue(ClassWithOneCommandMethodWithManyArguments.command1Executed);
     }
 
@@ -62,11 +62,11 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(2, results.size());
         ReflectionCommandResult result = findResultForCommand(results, "command1");
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithManyCommands.command1Executed);
         result = findResultForCommand(results, "command2");
         assertEquals("command2", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithManyCommands.command2Executed);
     }
 
@@ -89,7 +89,7 @@ public class DefaultReflectionCommandFactoryTest {
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
         try {
-            executeCommand(result.getBasicCommand(), "arg1Value");
+            executeCommand(result.getNode(), "arg1Value");
             fail();
         }
         catch(ReplashCommandUsageException e) {
@@ -108,7 +108,7 @@ public class DefaultReflectionCommandFactoryTest {
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
         try {
-            executeCommand(result.getBasicCommand(), "arg1Value", "arg2Value", "arg3Value");
+            executeCommand(result.getNode(), "arg1Value", "arg2Value", "arg3Value");
             fail();
         }
         catch(ReplashCommandUsageException e) {
@@ -126,7 +126,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithOptionalArguments.command1Executed);
     }
 
@@ -139,7 +139,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand(), "value");
+        executeCommand(result.getNode(), "value");
         assertTrue(ClassWithOptionalArgumentsProvided.command1Executed);
     }
 
@@ -152,7 +152,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithCommandContextArgument.command1Executed);
     }
 
@@ -165,7 +165,7 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("customName", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithCustomName.command1Executed);
     }
 
@@ -178,8 +178,32 @@ public class DefaultReflectionCommandFactoryTest {
         assertEquals(1, results.size());
         ReflectionCommandResult result = results.get(0);
         assertEquals("command1", result.getCommandName());
-        executeCommand(result.getBasicCommand());
+        executeCommand(result.getNode());
         assertTrue(ClassWithStaticCommandMethod.command1Executed);
+    }
+
+    @Test
+    public void testCreateWithSimpleSubCommand() throws Exception {
+        // Execute
+        List<ReflectionCommandResult> results = commandFactory.create(ClassWithSimpleSubCommand.class);
+
+        // Verify
+        assertEquals(1, results.size());
+        ReflectionCommandResult result = results.get(0);
+        assertEquals("sub", result.getCommandName());
+        assertEquals(1, result.getNode().getChildren().size());
+        executeCommand(result.getNode().getChildren().iterator().next().getValue());
+        assertTrue(ClassWithSimpleSubCommand.SubCommand.command1Executed);
+    }
+
+    private void executeCommand(CommandTreeNode node, String... args) throws Exception {
+        BasicCommand basicCommand = node.getBasicCommand();
+        if(basicCommand instanceof ParentCommand) {
+            fail("Not implemented for parent commands");
+        }
+        else {
+            executeCommand((BasicCommand)basicCommand, args);
+        }
     }
 
     private void executeCommand(BasicCommand basicCommand, String... args) throws Exception {
@@ -194,8 +218,11 @@ public class DefaultReflectionCommandFactoryTest {
         CommandExecutor commandExecutor = new DefaultCommandExecutor(new DefaultCommandTextParser(), new DefaultCommandResolver());
         ReplashExceptionHandler exceptionHandler = new DefaultReplashExceptionHandler();
         ReplashRunner replashRunner = new DefaultReplashRunner(consoleAdapter, promptProvider, commandExecutor, exceptionHandler);
-        ReplashRuntime runtime = new ReplashRuntime(consoleAdapter, commandTree, promptProvider, replashRunner);
-        CommandContext executionContext = new CommandContext(runtime, "commandText", commandParameters, basicCommand);
+        CommandTextParser commandTextParser = new DefaultCommandTextParser();
+        CommandResolver commandResolver = new DefaultCommandResolver();
+        ReplashRuntime runtime = new ReplashRuntime(consoleAdapter, commandTextParser, commandResolver, commandTree, promptProvider, replashRunner, new DefaultHelpCommandHandler());
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), commandParameters);
+        CommandContext executionContext = new CommandContext(runtime, "commandText", resolutionContext);
         basicCommand.execute(executionContext);
     }
 
@@ -303,6 +330,18 @@ public class DefaultReflectionCommandFactoryTest {
         @Command
         public static void command1() {
             command1Executed = true;
+        }
+    }
+
+    public static class ClassWithSimpleSubCommand {
+        @Command(name = "sub")
+        public static class SubCommand {
+            public static boolean command1Executed;
+
+            @Command(name = "command")
+            public void command1() {
+                command1Executed = true;
+            }
         }
     }
 }

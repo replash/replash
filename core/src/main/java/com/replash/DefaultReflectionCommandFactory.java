@@ -1,12 +1,15 @@
 package com.replash;
 
+import com.replash.commands.CommandTreeNode;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DefaultReflectionCommandFactory implements ReflectionCommandFactory {
     @Override
@@ -30,11 +33,35 @@ public class DefaultReflectionCommandFactory implements ReflectionCommandFactory
 
     protected List<ReflectionCommandResult> createForNonCommandClass(Class<?> commandsClass) {
         List<ReflectionCommandResult> results = new ArrayList<>();
+
         for(Method method : commandsClass.getMethods()) {
             Command commandAnnotation = method.getAnnotation(Command.class);
             if(commandAnnotation != null) {
                 ReflectionCommandResult reflectionCommandResult = createCommand(commandsClass, method, null, commandAnnotation);
                 results.add(reflectionCommandResult);
+            }
+        }
+
+        for(Class<?> enclosingClass : commandsClass.getDeclaredClasses()) {
+            Command commandAnnotation = enclosingClass.getAnnotation(Command.class);
+            if(commandAnnotation != null) {
+                List<ReflectionCommandResult> nestedResults = createForNonCommandClass(enclosingClass);
+                if(!nestedResults.isEmpty()) {
+                    String commandName = enclosingClass.getName();
+                    if(!StringUtils.isEmpty(commandAnnotation.name())) {
+                        commandName = commandAnnotation.name();
+                    }
+
+                    BasicCommand parentCommand = new ParentCommand();
+                    Map<String, CommandTreeNode> childNodes = new HashMap<>();
+                    for(ReflectionCommandResult childResult : nestedResults) {
+                        childNodes.put(childResult.getCommandName(), childResult.getNode());
+                    }
+                    CommandTreeNode node = new CommandTreeNode(parentCommand, childNodes);
+
+                    ReflectionCommandResult reflectionCommandResult = new ReflectionCommandResult(commandName, node);
+                    results.add(reflectionCommandResult);
+                }
             }
         }
         return results;
@@ -49,7 +76,7 @@ public class DefaultReflectionCommandFactory implements ReflectionCommandFactory
         if(!StringUtils.isEmpty(commandAnnotation.name())) {
             commandName = commandAnnotation.name();
         }
-        return new ReflectionCommandResult(commandName, basicCommand);
+        return new ReflectionCommandResult(commandName, new CommandTreeNode(basicCommand));
     }
 
     private static class ReflectionInvocationHandler implements InvocationHandler {

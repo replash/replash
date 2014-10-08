@@ -1,5 +1,6 @@
 package com.replash;
 
+import com.replash.commands.CommandTreeNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,13 +13,15 @@ public class CommandContextTest extends ReplashRuntimeBasedTest {
         // Setup
         CommandParameters commandParameters = new CommandParameters("command");
         BasicCommand command = mock(BasicCommand.class);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(command), commandParameters);
 
         // Execute
-        CommandContext commandContext = new CommandContext(runtime, "text", commandParameters, command);
+        CommandContext commandContext = new CommandContext(runtime, "text", resolutionContext);
 
         // Verify
         assertSame(runtime, commandContext.getRuntime());
         assertEquals("text", commandContext.getCommandText());
+        assertSame(resolutionContext, commandContext.getResolutionContext());
         assertSame(commandParameters, commandContext.getCommandParameters());
         assertSame(command, commandContext.getCommand());
     }

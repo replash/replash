@@ -3,14 +3,12 @@ package com.replash;
 public class CommandContext {
     private final ReplashRuntime runtime;
     private final String commandText;
-    private final CommandParameters commandParameters;
-    private final BasicCommand command;
+    private final CommandResolutionContext resolutionContext;
 
-    public CommandContext(ReplashRuntime runtime, String commandText, CommandParameters commandParameters, BasicCommand command) {
+    public CommandContext(ReplashRuntime runtime, String commandText, CommandResolutionContext resolutionContext) {
         this.runtime = runtime;
         this.commandText = commandText;
-        this.commandParameters = commandParameters;
-        this.command = command;
+        this.resolutionContext = resolutionContext;
     }
 
     public ReplashRuntime getRuntime() {
@@ -21,11 +19,15 @@ public class CommandContext {
         return commandText;
     }
 
+    public CommandResolutionContext getResolutionContext() {
+        return resolutionContext;
+    }
+
     public CommandParameters getCommandParameters() {
-        return commandParameters;
+        return resolutionContext.getCommandParameters();
     }
 
     public BasicCommand getCommand() {
-        return command;
+        return resolutionContext.getNode().getBasicCommand();
     }
 }

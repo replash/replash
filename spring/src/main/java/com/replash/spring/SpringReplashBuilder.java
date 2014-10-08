@@ -2,8 +2,6 @@ package com.replash.spring;
 
 import com.replash.*;
 import jline.console.ConsoleReader;
-import com.replash.help.DetailedHelpHandler;
-import com.replash.help.SimpleHelpHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SpringReplashBuilder extends ReplashBuilder {
@@ -55,22 +53,13 @@ public class SpringReplashBuilder extends ReplashBuilder {
         this.commandResolver = commandResolver;
     }
 
-    public SimpleHelpHandler getSimpleHelpHandler() {
-        return simpleHelpHandler;
+    public HelpCommandHandler getHelpCommandHandler() {
+        return helpCommandHandler;
     }
 
     @Autowired(required = false)
-    public void setSimpleHelpHandler(SimpleHelpHandler simpleHelpHandler) {
-        this.simpleHelpHandler = simpleHelpHandler;
-    }
-
-    public DetailedHelpHandler getDetailedHelpHandler() {
-        return detailedHelpHandler;
-    }
-
-    @Autowired(required = false)
-    public void setDetailedHelpHandler(DetailedHelpHandler detailedHelpHandler) {
-        this.detailedHelpHandler = detailedHelpHandler;
+    public void setHelpCommandHandler(HelpCommandHandler helpCommandHandler) {
+        this.helpCommandHandler = helpCommandHandler;
     }
 
     public ReflectionCommandFactory getReflectionCommandFactory() {

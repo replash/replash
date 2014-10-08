@@ -1,6 +1,7 @@
 package com.replash;
 
 import com.replash.commands.CommandTree;
+import com.replash.commands.CommandTreeNode;
 import com.replash.options.CommandParametersWithOptions;
 import com.replash.options.OptionsBasicCommand;
 import com.replash.options.OptionsCommandParametersTransformer;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.mock;
 
 public class OptionsCommandParametersTransformerTest {
     private OptionsCommandParametersTransformer transformer;
+    private CommandTextParser commandTextParser;
+    private CommandResolver commandResolver;
     private PromptProvider promptProvider;
     private ReplashRunner replashRunner;
     private ReplashRuntime runtime;
@@ -23,9 +26,11 @@ public class OptionsCommandParametersTransformerTest {
     @Before
     public void setUp() {
         transformer = new OptionsCommandParametersTransformer(new BasicParser());
+        commandTextParser = mock(CommandTextParser.class);
+        commandResolver = mock(CommandResolver.class);
         promptProvider = mock(PromptProvider.class);
         replashRunner = mock(ReplashRunner.class);
-        runtime = new ReplashRuntime(mock(ConsoleAdapter.class), new CommandTree(), promptProvider, replashRunner);
+        runtime = new ReplashRuntime(mock(ConsoleAdapter.class), commandTextParser, commandResolver, new CommandTree(), promptProvider, replashRunner, new DefaultHelpCommandHandler());
     }
 
     @Test
@@ -35,7 +40,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command";
         CommandParameters existingCommandParameters = new CommandParameters("command");
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -53,7 +59,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command arg1";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"arg1"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -72,7 +79,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command arg1 arg2";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"arg1", "arg2"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -93,7 +101,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command -opt";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"-opt"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -113,7 +122,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command -opt value";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"-opt", "value"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -133,7 +143,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command --opt";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"--opt"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -153,7 +164,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command --opt value";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"--opt", "value"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);
@@ -174,7 +186,8 @@ public class OptionsCommandParametersTransformerTest {
         BasicCommand basicCommand = new StubBasicCommand(options);
         String commandText = "command -opt1 -opt2 arg1 arg2";
         CommandParameters existingCommandParameters = new CommandParameters("command", new String[]{"-opt1", "-opt2", "arg1", "arg2"});
-        CommandContext existingCommandContext = new CommandContext(runtime, commandText, existingCommandParameters, basicCommand);
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(new CommandTreeNode(basicCommand), existingCommandParameters);
+        CommandContext existingCommandContext = new CommandContext(runtime, commandText, resolutionContext);
 
         // Exercise
         CommandParametersWithOptions transformedCommandParameters = transformer.transform(existingCommandContext, existingCommandParameters);

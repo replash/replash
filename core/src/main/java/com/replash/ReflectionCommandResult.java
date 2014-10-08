@@ -1,19 +1,21 @@
 package com.replash;
 
+import com.replash.commands.CommandTreeNode;
+
 public class ReflectionCommandResult {
     private final String commandName;
-    private final BasicCommand basicCommand;
+    private final CommandTreeNode node;
 
-    public ReflectionCommandResult(String commandName, BasicCommand basicCommand) {
+    public ReflectionCommandResult(String commandName, CommandTreeNode node) {
         this.commandName = commandName;
-        this.basicCommand = basicCommand;
+        this.node = node;
     }
 
     public String getCommandName() {
         return commandName;
     }
 
-    public BasicCommand getBasicCommand() {
-        return basicCommand;
+    public CommandTreeNode getNode() {
+        return node;
     }
 }

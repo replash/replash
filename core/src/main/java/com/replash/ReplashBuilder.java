@@ -1,14 +1,10 @@
 package com.replash;
 
-import jline.console.ConsoleReader;
 import com.replash.commands.CommandTree;
 import com.replash.commands.CommandTreeNode;
 import com.replash.commands.builtin.ExitCommand;
 import com.replash.commands.builtin.HelpCommand;
-import com.replash.help.DefaultDetailedHelpHandler;
-import com.replash.help.DefaultSimpleHelpHandler;
-import com.replash.help.DetailedHelpHandler;
-import com.replash.help.SimpleHelpHandler;
+import jline.console.ConsoleReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +19,7 @@ public class ReplashBuilder {
     protected PromptProvider promptProvider = new StaticTextPromptProvider();
     protected CommandTextParser commandTextParser = new DefaultCommandTextParser();
     protected CommandResolver commandResolver = new DefaultCommandResolver();
-    protected SimpleHelpHandler simpleHelpHandler = new DefaultSimpleHelpHandler();
-    protected DetailedHelpHandler detailedHelpHandler = new DefaultDetailedHelpHandler(commandTextParser, commandResolver);
+    protected HelpCommandHandler helpCommandHandler = new DefaultHelpCommandHandler();
     protected ReflectionCommandFactory reflectionCommandFactory = new DefaultReflectionCommandFactory();
     protected ReplashExceptionHandler replashExceptionHandler = new DefaultReplashExceptionHandler();
     protected List<ReplashEventListener> replashEventListeners = new ArrayList<>();
@@ -67,7 +62,7 @@ public class ReplashBuilder {
             withHelpCommand();
         }
 
-        ReplashRuntime runtime = createRuntime(consoleAdapter, commandTree, runner);
+        ReplashRuntime runtime = createRuntime(consoleAdapter, commandTextParser, commandResolver, commandTree, runner, helpCommandHandler);
 
         for(ReplashEventListener eventListener : replashEventListeners) {
             runner.addEventListener(eventListener);
@@ -77,14 +72,14 @@ public class ReplashBuilder {
     }
 
     public ReplashBuilder withCommand(String commandName, BasicCommand basicCommand) {
-        commandTree.addChild(commandName, new CommandTreeNode(basicCommand));
+        withCommand(commandName, new CommandTreeNode(basicCommand));
         return this;
     }
 
     public ReplashBuilder withCommands(Class<?> commandsClass) {
         List<ReflectionCommandResult> reflectionCommandResults = reflectionCommandFactory.create(commandsClass);
         for(ReflectionCommandResult result : reflectionCommandResults) {
-            withCommand(result.getCommandName(), result.getBasicCommand());
+            withCommand(result.getCommandName(), result.getNode());
         }
         return this;
     }
@@ -92,7 +87,7 @@ public class ReplashBuilder {
     public ReplashBuilder withCommands(Object commandsObject) {
         List<ReflectionCommandResult> reflectionCommandResults = reflectionCommandFactory.create(commandsObject);
         for(ReflectionCommandResult result : reflectionCommandResults) {
-            withCommand(result.getCommandName(), result.getBasicCommand());
+            withCommand(result.getCommandName(), result.getNode());
         }
         return this;
     }
@@ -103,7 +98,7 @@ public class ReplashBuilder {
     }
 
     public ReplashBuilder withHelpCommand() {
-        HelpCommand helpCommand = new HelpCommand(simpleHelpHandler, detailedHelpHandler);
+        HelpCommand helpCommand = new HelpCommand(helpCommandHandler);
         return withCommand("help", helpCommand);
     }
 
@@ -155,6 +150,11 @@ public class ReplashBuilder {
         return this;
     }
 
+    protected ReplashBuilder withCommand(String commandName, CommandTreeNode node) {
+        commandTree.addChild(commandName, node);
+        return this;
+    }
+
     public ReplashBuilder withEventListener(ReplashEventListener eventListener) {
         this.replashEventListeners.add(eventListener);
         return this;
@@ -176,8 +176,8 @@ public class ReplashBuilder {
         return new DefaultCommandExecutor(commandTextParser, commandResolver);
     }
 
-    protected ReplashRuntime createRuntime(ConsoleAdapter consoleAdapter, CommandTree commandTree, ReplashRunner runner) {
-        return new ReplashRuntime(consoleAdapter, commandTree, promptProvider, runner);
+    protected ReplashRuntime createRuntime(ConsoleAdapter consoleAdapter, CommandTextParser commandTextParser, CommandResolver commandResolver, CommandTree commandTree, ReplashRunner runner, HelpCommandHandler helpCommandHandler) {
+        return new ReplashRuntime(consoleAdapter, commandTextParser, commandResolver, commandTree, promptProvider, runner, helpCommandHandler);
     }
 
     protected ReplashRunner createRunner(ConsoleAdapter consoleAdapter, PromptProvider promptProvider, CommandExecutor commandExecutor, ReplashExceptionHandler replashExceptionHandler) {

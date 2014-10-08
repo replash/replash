@@ -30,7 +30,8 @@ public class OptionsCommandExecutorPlugin implements CommandExecutorPlugin {
             throw new CommandTextFormatException(commandText, e.getMessage());
         }
 
-        return new CommandContext(defaultCommandContext.getRuntime(), commandText, transformedCommandParameters, defaultCommandContext.getCommand());
+        CommandResolutionContext resolutionContext = new CommandResolutionContext(defaultCommandContext.getResolutionContext().getNode(), transformedCommandParameters);
+        return new CommandContext(defaultCommandContext.getRuntime(), commandText, resolutionContext);
     }
 
     protected CommandParameters transformCommandParameters(CommandContext existingCommandContext, CommandParameters existingCommandParameters) throws ParseException {

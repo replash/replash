@@ -1,0 +1,5 @@
+mainClassName="com.replash.examples.subcommands.SubCommandsMain"
+
+jar {
+    baseName = "replash-example-subcommands"
+}
